@@ -8,6 +8,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.wexinc.interview.challenge1.controllers.AuthController;
 import com.wexinc.interview.challenge1.controllers.ThreadsController;
+import com.wexinc.interview.challenge1.filters.AuthFilter;
 import com.wexinc.interview.challenge1.models.AccessLevel;
 import com.wexinc.interview.challenge1.repositories.UserRepo;
 import com.wexinc.interview.challenge1.services.PasswordHasher;
@@ -25,7 +26,9 @@ public class Main {
 				resp.redirect(path + "/", 307);
 			}
 		});
-
+		
+		before("*",injector.getInstance(AuthFilter.class));
+		
 		injector.getInstance(ThreadsController.class);
 		injector.getInstance(AuthController.class);
 

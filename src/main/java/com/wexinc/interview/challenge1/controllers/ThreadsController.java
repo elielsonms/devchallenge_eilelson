@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.inject.Inject;
-import com.wexinc.interview.challenge1.models.AuthorizationToken;
 import com.wexinc.interview.challenge1.models.Message;
 import com.wexinc.interview.challenge1.models.MsgThread;
 import com.wexinc.interview.challenge1.models.PostSuccessResponse;
@@ -63,13 +62,11 @@ public class ThreadsController {
 			return "";
 		}
 
-		final String authToken = req.headers("X-WEX-AuthToken");
-		final AuthorizationToken token = authManager.verifyAuthToken(authToken);
 		MsgThread thread;
 		if (message.getThreadId() == 0) {
-			thread = threadRepo.createMessage(token.getUserId(), message.getText());
+			thread = threadRepo.createMessage(req.attribute("userId"), message.getText());
 		} else {
-			thread = threadRepo.createMessage(message.getThreadId(), token.getUserId(), message.getText());
+			thread = threadRepo.createMessage(message.getThreadId(), req.attribute("userId"), message.getText());
 		}
 
 		return new PostSuccessResponse(thread.getId());
