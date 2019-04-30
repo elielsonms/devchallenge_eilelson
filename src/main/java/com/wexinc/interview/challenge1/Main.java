@@ -14,6 +14,7 @@ import com.wexinc.interview.challenge1.services.PasswordHasher;
 import com.wexinc.interview.challenge1.util.Filters;
 
 public class Main {
+	public static String SALT = "salt";
 	public static void main(String[] args) {
 		final Injector injector = Guice.createInjector(new AppModule());
 
@@ -40,6 +41,6 @@ public class Main {
 	}
 
 	private static void initializeAdminUser(UserRepo repo, PasswordHasher hasher) {
-		repo.createUser("admin", hasher.hash("admin", "salt"), AccessLevel.Admin);
+		repo.createUser("admin", hasher.hash("admin", SALT), AccessLevel.Admin);
 	}
 }

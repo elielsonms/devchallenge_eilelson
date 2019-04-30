@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.google.inject.Inject;
 import com.wexinc.interview.challenge1.AuthorizationException;
+import com.wexinc.interview.challenge1.Main;
 import com.wexinc.interview.challenge1.models.AuthorizationToken;
 import com.wexinc.interview.challenge1.models.User;
 import com.wexinc.interview.challenge1.repositories.UserRepo;
@@ -62,9 +63,16 @@ public class AuthManagerImpl implements AuthManager {
 	}
 
 	@Override
-	public AuthorizationToken changePassword(int userId, String authToken, String newPassword)
+	public AuthorizationToken changePassword(String userName, String oldPassword, String authToken, String newPassword)
 			throws AuthorizationException {
-		// TODO Auto-generated method stub
+		verifyAuthToken(authToken);
+		
+		User user = userRepo.getByName(userName);
+		if (user == null || !user.getPassHash().equals(hasher.hash(oldPassword, Main.SALT)))
+			 throw new AuthorizationException();
+		
+		user.setPassHash(hasher.hash(newPassword, Main.SALT));
+		userRepo.saveUser(user);
 		return null;
 	}
 

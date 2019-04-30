@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.wexinc.interview.challenge1.models.AuthorizationToken;
+import com.wexinc.interview.challenge1.models.ChangePasswordRequest;
 import com.wexinc.interview.challenge1.models.LoginRequest;
 import com.wexinc.interview.challenge1.models.User;
 import com.wexinc.interview.challenge1.repositories.UserRepo;
@@ -40,6 +41,7 @@ public class AuthController {
 		logger.info("Starting AuthController");
 
 		post(Path.Login, handleLogin, json());
+		post(Path.ChangePassword, handleChangePassword, json());
 	}
 
 	private Route handleLogin = (Request req, Response resp) -> {
@@ -58,6 +60,22 @@ public class AuthController {
 
 		final AuthorizationToken token = authManager.login(user.getId(), loginRequest.getPassword());
 		return token.getAuthToken();
+	};
+	
+	private Route handleChangePassword = (Request req, Response resp) -> {
+		final ChangePasswordRequest changePasswordRequest = new Gson().
+										fromJson(req.body(), ChangePasswordRequest.class);
+		
+		if (changePasswordRequest == null || AppUtils.isNullOrEmpty(changePasswordRequest.getPassword())
+				|| AppUtils.isNullOrEmpty(changePasswordRequest.getUserName())
+				|| AppUtils.isNullOrEmpty(changePasswordRequest.getNewPassword())) {
+			resp.status(400);
+			return "";
+		}
+
+		authManager.changePassword(changePasswordRequest.getUserName(), changePasswordRequest.getPassword(), req.headers("X-WEX-AuthToken"), changePasswordRequest.getNewPassword());
+	
+		return "";
 	};
 
 }
