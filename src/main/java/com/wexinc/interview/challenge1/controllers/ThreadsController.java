@@ -49,8 +49,17 @@ public class ThreadsController {
 				json());
 
 		get(Path.OneThread, (req, resp) -> {
-			final int threadId = Integer.parseInt(req.params(":threadId"));
-			return threadRepo.get(threadId);
+			try {
+				final int threadId = Integer.parseInt(req.params(":threadId"));
+				MsgThread msgThread = threadRepo.get(threadId);
+				if(msgThread != null) {
+					return msgThread;
+				}
+			}catch (NumberFormatException e) {
+				logger.error("Non-numeric Id passed");
+			}
+			resp.status(404);
+			return "";
 		}, json());
 
 		post(Path.ThreadList, handleMessagePost, json());
